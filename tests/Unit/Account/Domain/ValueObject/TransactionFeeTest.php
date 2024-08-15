@@ -15,7 +15,7 @@ final class TransactionFeeTest extends UnitTestCase
     public function testShouldSuccessCalculateDebitFee(): void
     {
         // Given
-        $amount = 1.1;
+        $amount = 1000;
         $transactionFee = new TransactionFee($amount);
 
         // When
