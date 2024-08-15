@@ -7,5 +7,8 @@ up:
 stop:
 	docker compose stop
 
+test:
+	docker compose exec php vendor/bin/phpunit
+
 bash:
 	docker compose exec php bash
