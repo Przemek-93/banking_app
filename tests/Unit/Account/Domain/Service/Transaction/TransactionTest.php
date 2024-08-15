@@ -52,6 +52,22 @@ final class TransactionTest extends UnitTestCase
     }
 
     #[Test]
+    public function testDebitShouldDecreaseAccountBalance(): void
+    {
+        // Given
+        $account = AccountSample::create(balance: 3.3);
+        $accountBalanceBeforeDebit = $account->getBalance();
+        $payment = PaymentSample::create(accountId: $account->getId(), amount: 1.1);
+        $transaction = new Transaction(new InMemoryPaymentRepository());
+
+        // When
+        $transaction->executeTransaction($account, $payment);
+
+        // Then
+        $this->assertSame($accountBalanceBeforeDebit - $payment->getTotalDebitPaymentCost(), $account->getBalance());
+    }
+
+    #[Test]
     public function testDebitShouldThrowExceedTransactionLimitException(): void
     {
         // Given
@@ -68,6 +84,23 @@ final class TransactionTest extends UnitTestCase
     }
 
     #[Test]
+    public function testOldDebitTransactionsShouldNotThrowExceedTransactionLimitException(): void
+    {
+        // Given
+        $account = AccountSample::create(2000.0);
+        $accountBalanceBeforeDebit = $account->getBalance();
+        $payment = PaymentSample::create(accountId: $account->getId(), amount: 150.0);
+        $existedPayments = $this->generateExistedPayments(accountId: $account->getId(), count: random_int(3, 100), createdAt: new DateTimeImmutable('- 1 day'));
+        $transaction = new Transaction(new InMemoryPaymentRepository($existedPayments));
+
+        // When
+        $transaction->executeTransaction($account, $payment);
+
+        // Then
+        $this->assertSame($accountBalanceBeforeDebit - $payment->getTotalDebitPaymentCost(), $account->getBalance());
+    }
+
+    #[Test]
     public function testDebitShouldThrowNotEnoughFoundException(): void
     {
         // Given
@@ -80,22 +113,6 @@ final class TransactionTest extends UnitTestCase
 
         // When
         $transaction->executeTransaction($account, $payment);
-    }
-
-    #[Test]
-    public function testDebitShouldDecreaseAccountBalance(): void
-    {
-        // Given
-        $account = AccountSample::create(balance: 3.3);
-        $accountBalanceBeforeDebit = $account->getBalance();
-        $payment = PaymentSample::create(accountId: $account->getId(), amount: 1.1);
-        $transaction = new Transaction(new InMemoryPaymentRepository());
-
-        // When
-        $transaction->executeTransaction($account, $payment);
-
-        // Then
-        $this->assertSame($accountBalanceBeforeDebit - $payment->getTotalDebitPaymentCost(), $account->getBalance());
     }
 
     #[Test]
