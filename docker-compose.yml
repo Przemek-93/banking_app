@@ -1,7 +1,8 @@
 services:
   php:
-    build: .
+    build: ./
     container_name: php-banking-app
     entrypoint: ["tail", "-f", "/dev/null"]
     volumes:
       - ./:/var/www
+      - /var/www/vendor/
