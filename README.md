@@ -5,6 +5,8 @@
 
 This project is a task designed to showcase a micro banking application implemented with Domain-Driven Design (DDD) principles in a framework-agnostic approach.
 
+URL: `https://github.com/Przemek-93/banking_app`
+
 ## Start
 
 1. Clone repository from `git@github.com:Przemek-93/banking_app.git`
